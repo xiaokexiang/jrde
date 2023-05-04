@@ -1,7 +1,13 @@
 FROM ubuntu:22.04
 
+ENV TZ=Asia/Shanghai
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 # 设置中文环境
-ENV LANG=C.UTF-8
+ENV LANG=C.UTF-8 \
+    DEBIAN_FRONTEND=noninteractive
+
+RUN echo "keyboard-configuration keyboard-configuration/layout select English (US)" | debconf-set-selections && echo "keyboard-configuration keyboard-configuration/variant select English (US)" | debconf-set-selections
 
 # 安装gnome桌面和vnc服务器
 RUN apt-get update && apt-get install -y \
@@ -11,6 +17,7 @@ RUN apt-get update && apt-get install -y \
     x11vnc \
     xvfb \
     sudo \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
 # 配置vnc密码
