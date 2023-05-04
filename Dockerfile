@@ -6,7 +6,7 @@ ENV TZ=Asia/Shanghai
 RUN apt-get update && apt-get install -y \
     kubuntu-desktop \
     kde-plasma-desktop \
-    kde-l10n-zhcn \
+    kde-l10n-zh-hans \
     x11vnc \
     xvfb \
     kde-full \
