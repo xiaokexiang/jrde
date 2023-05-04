@@ -1,0 +1,28 @@
+name: Build Docker image For jrde
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout the code
+      uses: actions/checkout@v2
+
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build the Docker image
+      run: |
+        docker build -t xiaokexiang/jrde:latest .
+
+    - name: Push the Docker image to DockerHub
+      run: |
+        docker push xiaokexiang/jrde:latest
