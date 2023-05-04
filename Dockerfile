@@ -11,6 +11,8 @@ RUN echo "keyboard-configuration keyboard-configuration/layout select English (U
 
 # 安装gnome桌面和vnc服务器
 RUN apt-get update && apt-get install -y \
+    dbus \
+    dbus-x11 \
     ubuntu-gnome-desktop \
     gnome-session \
     gnome-terminal \
@@ -38,4 +40,4 @@ gnome-session\n\
 EXPOSE 5900
 
 # Start VNC server and Gnome session
-CMD ["/bin/bash", "/root/start.sh"]
+# CMD ["/bin/bash", "/root/start.sh"]
