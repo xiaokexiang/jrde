@@ -1,43 +1,32 @@
-FROM ubuntu:22.04
+FROM ubuntu:20.04
 
+ENV DEBIAN_FRONTEND noninteractive
 ENV TZ=Asia/Shanghai
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# 设置中文环境
-ENV LANG=C.UTF-8 \
-    DEBIAN_FRONTEND=noninteractive
-
-RUN echo "keyboard-configuration keyboard-configuration/layout select English (US)" | debconf-set-selections && echo "keyboard-configuration keyboard-configuration/variant select English (US)" | debconf-set-selections
-
-# 安装gnome桌面和vnc服务器
 RUN apt-get update && apt-get install -y \
-    dbus \
-    dbus-x11 \
-    ubuntu-gnome-desktop \
-    gnome-session \
-    gnome-terminal \
+    kubuntu-desktop \
+    kde-plasma-desktop \
+    kde-l10n-zhcn \
     x11vnc \
     xvfb \
-    sudo \
-    git \
+    kde-full \
+    && apt-get autoclean && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# 配置vnc密码
+# Install X11 and PulseAudio servers
+RUN apt-get update && apt-get install -y \
+    xserver-xorg \
+    pulseaudio \
+    && apt-get autoclean && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+
 RUN mkdir ~/.vnc && x11vnc -storepasswd 123456 ~/.vnc/passwd
+RUN echo '#!/bin/bash
+xvfb-run -n 0 -s "-screen 0 1024x768x24" kwin &
+startkde' > ~/.vnc/xstartup && chmod +x ~/.vnc/xstartup
+# Expose X11 and PulseAudio servers
+ENV DISPLAY=:0
+ENV PULSE_SERVER=unix:/tmp/pulseaudio.socket
 
-# 创建启动脚本
-RUN echo '#!/bin/bash\n\
-\n\
-# Run the VNC server\n\
-mkdir -p ~/.vnc\n\
-x11vnc -forever -usepw -create\n\
-\n\
-# Start the desktop environment\n\
-gnome-session\n\
-' > ~/start.sh && chmod +x ~/start.sh
-
-# Expose VNC port
-EXPOSE 5900
-
-# Start VNC server and Gnome session
-# CMD ["/bin/bash", "/root/start.sh"]
+# CMD ["/bin/sh","-c","x11vnc -forever -usepw -create"]
