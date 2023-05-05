@@ -1,0 +1,45 @@
+# 基于 ubuntu:22.04 镜像构建
+FROM ubuntu:22.04
+
+# 设置时区
+ENV TZ=Asia/Shanghai
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# 设置 apt 镜像源
+RUN sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list
+RUN sed -i 's/security.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list
+
+# 安装 xfce4 桌面环境、x11vnc 和依赖
+RUN apt-get update && apt-get install -y apt-utils xfce4 x11vnc xvfb git && apt-get clean
+
+# 创建 vnc 密码，这里使用的是密码为 123456 的示例，请根据实际情况修改
+RUN mkdir ~/.vnc && x11vnc -storepasswd 123456 ~/.vnc/passwd
+
+# 安装 idea2022.3.5
+ADD https://download-cf.jetbrains.com/idea/ideaIC-2022.3.5.tar.gz /opt/
+RUN tar -xzf /opt/ideaIC-2022.3.5.tar.gz -C /opt/idea
+RUN rm /opt/ideaIC-2022.3.5.tar.gz
+
+# 安装 jdk8
+ADD https://cdn.azul.com/zulu/bin/zulu8.56.0.21-ca-jdk8.0.312-linux_x64.tar.gz /opt/
+RUN tar -xzf /opt/zulu8.56.0.21-ca-jdk8.0.312-linux_x64.tar.gz -C /opt/java8
+RUN rm /opt/zulu8.56.0.21-ca-jdk8.0.312-linux_x64.tar.gz
+ENV JAVA_HOME=/opt/java8
+ENV PATH=${PATH}:${JAVA_HOME}/bin
+
+# 安装 maven3
+ADD https://mirrors.tuna.tsinghua.edu.cn/apache/maven/maven-3/3.8.4/binaries/apache-maven-3.8.4-bin.tar.gz /opt/
+RUN tar -xzf /opt/apache-maven-3.8.4-bin.tar.gz -C /opt/maven3
+RUN rm /opt/apache-maven-3.8.4-bin.tar.gz
+ENV MAVEN_HOME=/opt/maven3
+ENV PATH=${PATH}:${MAVEN_HOME}/bin
+
+# 将 IDEA 相关配置文件拷贝到容器中
+# COPY idea-settings.jar /root/
+# RUN unzip /root/idea-settings.jar -d /root/ && rm /root/idea-settings.jar
+
+# 暴露 VNC 端口
+EXPOSE 5900
+
+# 启动 xfce4 桌面和 x11vnc
+CMD ["sh", "-c", "x11vnc -display :0 -usepw -forever -shared -geometry 1280x720"]
