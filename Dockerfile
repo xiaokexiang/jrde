@@ -1,33 +1,34 @@
-FROM ubuntu:20.04
+ARG BASE_TAG="develop"
+ARG BASE_IMAGE="core-ubuntu-focal"
+FROM kasmweb/$BASE_IMAGE:$BASE_TAG
 
+USER root
+
+ENV HOME /home/kasm-default-profile
+ENV STARTUPDIR /dockerstartup
+WORKDIR $HOME
+
+### Envrionment config
 ENV DEBIAN_FRONTEND noninteractive
-ENV TZ=Asia/Shanghai
+ENV KASM_RX_HOME $STARTUPDIR/kasmrx
+ENV INST_SCRIPTS $STARTUPDIR/install
+ENV DONT_PROMPT_WSL_INSTALL "No_Prompt_please"
 
-RUN apt-get update && apt-get install -y \
-    kubuntu-desktop \
-    kde-plasma-desktop \
-    kde-l10n-zh-hans \
-    x11vnc \
-    xvfb \
-    kde-full \
-    && apt-get autoclean && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+### Install Tools
+RUN set -ex && apt-get update && apt-get install -y vlc git tmux
 
-# Install X11 and PulseAudio servers
-RUN apt-get update && apt-get install -y \
-    xserver-xorg \
-    pulseaudio \
-    && apt-get autoclean && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+# Install Utilities
+RUN apt-get install -y nano zip xdotool sudo
 
+#ADD ./src/common/scripts $STARTUPDIR
+RUN $STARTUPDIR/set_user_permission.sh $HOME
 
-RUN mkdir ~/.vnc && x11vnc -storepasswd 123456 ~/.vnc/passwd
-RUN echo '#!/bin/bash \n\
-\n\
-xvfb-run -n 0 -s "-screen 0 1024x768x24" kwin & startkde \n\
-' > ~/.vnc/xstartup && chmod +x ~/.vnc/xstartup
-# Expose X11 and PulseAudio servers
-ENV DISPLAY=:0
-ENV PULSE_SERVER=unix:/tmp/pulseaudio.socket
+RUN chown 1000:0 $HOME
 
-# CMD ["/bin/sh","-c","x11vnc -forever -usepw -create"]
+ENV HOME /home/kasm-user
+WORKDIR $HOME
+RUN mkdir -p $HOME && chown -R 1000:0 $HOME
+RUN echo 'kasm-user ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+USER 1000
+
+CMD ["--tail-log"]
