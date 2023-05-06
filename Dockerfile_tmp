@@ -1,0 +1,36 @@
+FROM xiaokexiang/jrde:base
+MAINTAINER xiaokexiang <xxiaokexiang@gmail.com>
+WORKDIR /opt
+
+# kt-connect docker run -itd -p 5901:5901 --cap-add=NET_ADMIN -v /dev/net/tun:/dev/net/tun  xiaokexiang/jrde:java
+COPY ktctl kubectl kt.sh /usr/local/bin/
+RUN mkdir -p /root/.kube/ && chmod +x /usr/local/bin/kt.sh
+COPY config.sample /root/.kube/
+
+# chorme
+RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
+    apt install -y ./google-chrome-stable_current_amd64.deb && \
+    rm google-chrome-stable_current_amd64.deb && \
+    rm -rf /var/lib/apt/lists/*
+
+# 安装 jdk8
+RUN wget https://repo.huaweicloud.com/java/jdk/8u202-b08/jdk-8u202-linux-x64.tar.gz -O /opt/zulu8.tar.gz  && \
+    mkdir -p /opt/java && \
+    tar -xzf /opt/zulu8.tar.gz -C /opt/java --strip-components=1 && \
+    rm /opt/zulu8.tar.gz
+ENV JAVA_HOME=/opt/java
+ENV PATH=${PATH}:${JAVA_HOME}/bin
+
+RUN wget https://download.jetbrains.com/idea/ideaIC-2022.3.tar.gz -O /opt/ideaIC-2022.3.tar.gz && \
+    mkdir -p /opt/idea && \
+    tar -xzf /opt/ideaIC-2022.3.tar.gz -C /opt/idea --strip-components=1 && \
+    rm /opt/ideaIC-2022.3.tar.gz
+# 安装 maven3
+RUN wget https://mirrors.tuna.tsinghua.edu.cn/apache/maven/maven-3/3.9.1/binaries/apache-maven-3.9.1-bin.tar.gz -O /opt/maven3.tar.gz && \
+    mkdir -p /opt/maven3 && \
+    tar -xzf /opt/maven3.tar.gz -C /opt/maven3 --strip-components=1 && \
+    rm /opt/maven3.tar.gz
+ENV MAVEN_HOME=/opt/maven3
+ENV PATH=${PATH}:${MAVEN_HOME}/bin
+
+COPY settings-20200707.xml settings-upms.xml /opt/maven3/conf

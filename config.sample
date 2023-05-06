@@ -1,0 +1,18 @@
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority: ./{PATH}/ca.pem
+    server: https://{IP}:6443
+  name: cluster-ssl
+contexts:
+- context:
+    cluster: cluster-ssl
+    user: admin_ssl
+  name: admin@cluster-ssl
+current-context: admin@cluster-ssl
+kind: Config
+users:
+- name: admin_ssl
+  user:
+    client-certificate: ./{PATH}/admin.pem
+    client-key: ./{PATH}/admin-key.pem
