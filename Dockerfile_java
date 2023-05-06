@@ -1,30 +1,11 @@
-FROM ubuntu:latest
-
-# 设置中文环境
-ENV LANG=C.UTF-8
-ENV DEBIAN_FRONTEND noninteractive
-ENV USER=root
-ENV TZ=Asia/Shanghai
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-
+FROM xiaokexiang/jrde:base
+MAINTAINER xiaokexiang <xxiaokexiang@gmail.com>
 WORKDIR /opt
 
-# 安装必要的软件包
-RUN apt-get update && \
-    apt-get install -y tightvncserver \
-                       wget \
-                       htop \
-                       autocutsel \
-                       vim \
-                       git \
-                       xvfb \
-                       xfce4 \
-                       xfce4-terminal \
-                       xterm \
-                       xfonts-wqy \
-                       language-pack-zh-hans \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+# kt-connect
+COPY ktctl kubectl kt.sh /usr/local/bin/
+RUN mkdir -p /root/.kube/ && chmod +x /usr/local/bin/kt.sh
+COPY config.sample /root/.kube/
 
 # 安装 jdk8
 RUN wget https://repo.huaweicloud.com/java/jdk/8u202-b08/jdk-8u202-linux-x64.tar.gz -O /opt/zulu8.tar.gz  && \
@@ -38,6 +19,9 @@ RUN wget https://download.jetbrains.com/idea/ideaIC-2022.3.tar.gz -O /opt/ideaIC
     mkdir -p /opt/idea && \
     tar -xzf /opt/ideaIC-2022.3.tar.gz -C /opt/idea --strip-components=1 && \
     rm /opt/ideaIC-2022.3.tar.gz
+ENV IDEA_HOME=/opt/idea
+ENV PATH=${PATH}:${IDEA_HOME}/bin
+
 # 安装 maven3
 RUN wget https://mirrors.tuna.tsinghua.edu.cn/apache/maven/maven-3/3.9.1/binaries/apache-maven-3.9.1-bin.tar.gz -O /opt/maven3.tar.gz && \
     mkdir -p /opt/maven3 && \
@@ -46,33 +30,7 @@ RUN wget https://mirrors.tuna.tsinghua.edu.cn/apache/maven/maven-3/3.9.1/binarie
 ENV MAVEN_HOME=/opt/maven3
 ENV PATH=${PATH}:${MAVEN_HOME}/bin
 
-RUN ln -s /opt/idea/bin/idea.sh /usr/bin/idea && \
-    echo "[Desktop Entry]\nVersion=1.0\nType=Application\nName=IntelliJ IDEA\nIcon=/opt/idea/bin/idea.png\nExec=idea\nComment=The Drive to Develop\nCategories=Development;IDE;\nTerminal=false\nStartupNotify=true" > /usr/share/applications/idea.desktop && \
-    chmod +x /usr/share/applications/idea.desktop
-
-RUN echo "#!/bin/bash" >> /root/.xsession \
-    && echo "exec startxfce4" >> /root/.xsession
-
-# 设置 VNC 密码
-RUN mkdir ~/.vnc && \
-    echo "password" | vncpasswd -f > ~/.vnc/passwd && \
-    chmod 600 ~/.vnc/passwd
-
-# 设置 VNC 会话
-RUN echo "#!/bin/bash\n\
-    autocutsel & \n\
-    Xvfb :1 -screen 0 1920x1080x24 & \n\
-    export DISPLAY=:1 \n\
-    vncserver :1 -geometry 1920x1080 -depth 24 && \
-    tail -f /root/.vnc/*.log" > /root/startup.sh && \
-    chmod +x /root/startup.sh
-
-# 设置 IDEA 环境变量
-#ENV IDEA_HOME /opt/idea
-#ENV PATH $PATH:$IDEA_HOME/bin
-
-# 暴露 VNC 端口
-EXPOSE 5901
-
-# 启动 VNC 会话和 IDEA
-CMD ["sh","-c","/root/startup.sh"]
+COPY settings-20200707.xml settings-upms.xml /opt/maven3/conf
+COPY ja-etfilter.jar /opt/idea
+COPY idea.desktop /usr/share/applications/
+RUN chmod +x /usr/share/applications/idea.desktop && cp /usr/share/applications/idea.desktop /root/桌面/idea.desktop
