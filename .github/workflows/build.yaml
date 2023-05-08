@@ -21,8 +21,8 @@ jobs:
 
     - name: Build the Docker image
       run: |
-        docker build -t xiaokexiang/jrde:base .
+        docker build -t xiaokexiang/jrde:less .
 
     - name: Push the Docker image to DockerHub
       run: |
-        docker push xiaokexiang/jrde:base
+        docker push xiaokexiang/jrde:less

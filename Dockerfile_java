@@ -30,8 +30,16 @@ RUN wget https://mirrors.tuna.tsinghua.edu.cn/apache/maven/maven-3/3.9.1/binarie
 ENV MAVEN_HOME=/opt/maven3
 ENV PATH=${PATH}:${MAVEN_HOME}/bin
 
+# POSTMAN
+RUN wget https://dl.pstmn.io/download/latest/linux_64 -O /opt/postman.tar.gz && \
+    tar -zxvf postman.tar.gz -C /opt/postman --strip-components=1 && \
+    ln -s /opt/postman/Postman /usr/local/bin/postman && \
+    rm postman.tar.gz
+
+
 COPY settings-20200707.xml settings-upms.xml /opt/maven3/conf
 COPY ja-etfilter.jar /opt/idea
 COPY idea.desktop /usr/share/applications/
 COPY idea.desktop /root/桌面/idea.desktop
-RUN chmod +x /usr/share/applications/idea.desktop && chmod +x /root/桌面/idea.desktop
+COPY postman.desktop /root/桌面/postman.desktop
+RUN chmod +x /usr/share/applications/idea.desktop && chmod +x /root/桌面/idea.desktop && chmod +x /root/桌面/postman.desktop

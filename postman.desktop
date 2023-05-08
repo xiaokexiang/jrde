@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Postman
+Icon=/opt/Postman/app/icons/icon_128x128.png
+Exec=postman
+Comment=The Drive to Develop
+Categories=Development;IDE;
+Terminal=false
+StartupNotify=true
