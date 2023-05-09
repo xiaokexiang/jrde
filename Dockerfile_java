@@ -7,7 +7,7 @@ COPY ktctl kubectl kt.sh /usr/local/bin/
 RUN mkdir -p /root/.kube/ && chmod +x /usr/local/bin/kt.sh
 COPY config.sample /root/.kube/
 
-RUN apt-update && apt install -y iptables sshpass iproute2
+RUN apt update && apt install -y iptables sshpass iproute2
 
 # 安装 jdk8
 RUN wget https://repo.huaweicloud.com/java/jdk/8u202-b08/jdk-8u202-linux-x64.tar.gz -O /opt/zulu8.tar.gz  && \
@@ -40,7 +40,6 @@ RUN wget https://dl.pstmn.io/download/latest/linux_64 -O /opt/postman.tar.gz && 
 
 
 COPY settings-20200707.xml settings-upms.xml /opt/maven3/conf
-COPY ja-etfilter.jar /opt/idea
 COPY idea.desktop /usr/share/applications/
 COPY idea.desktop /root/桌面/idea.desktop
 COPY postman.desktop /root/桌面/postman.desktop
