@@ -17,7 +17,7 @@ RUN apt-get update && apt install --no-install-recommends xubuntu-desktop -y && 
         zsh \
         autocutsel \
         language-pack-zh-hans \
-        tigervnc-standalone-server \
+        # tigervnc-standalone-server \
         dbus-x11 \
         x11-utils \
         fonts-wqy-microhei \
@@ -32,6 +32,8 @@ RUN apt-get update && apt install --no-install-recommends xubuntu-desktop -y && 
 RUN echo -e 'LANG="zh_CN.UTF-8" \nLANGUAGE="zh_CN:zh:en_US:en"' > /etc/enviroment && sudo locale-gen
 RUN mkdir /root/.vnc/ && echo "password" | vncpasswd -f > ~/.vnc/passwd && chmod 600 ~/.vnc/passwd
 RUN echo "#!/bin/sh \nunset SESSION_MANAGER \nunset DBUS_SESSION_BUS_ADDRESS \nexport GTK_IM_MODULE=fcitx \nexport QT_IM_MODULE=fcitx \nexport XMODIFIERS=@im=fcitx \nexport LANG=zh_CN.UTF-8 \nfcitx -r \nchsh -s $(which zsh) \nstartxfce4" > ~/.vnc/xstartup && chmod u+x ~/.vnc/xstartup && ./etc/init.d/dbus start
+
+RUN wget https://phoenixnap.dl.sourceforge.net/project/tigervnc/stable/1.13.1/ubuntu-20.04LTS/amd64/tigervncserver_1.13.1-1ubuntu1_amd64.deb -O /opt/tigervnc-1.13.1.deb
 
 RUN sh -c "$(curl -fsSL https://gitee.com/mirrors/oh-my-zsh/raw/master/tools/install.sh)" "" --unattended && \
     git clone https://ghproxy.com/https://github.com/zsh-users/zsh-autosuggestions.git ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions && \
