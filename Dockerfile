@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 MAINTAINER xiaokexiang <xxiaokexiang@gmail.com>
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -17,7 +17,7 @@ RUN apt-get update && apt install --no-install-recommends xubuntu-desktop -y && 
         zsh \
         autocutsel \
         language-pack-zh-hans \
-        # tigervnc-standalone-server \
+        tigervnc-standalone-server \
         dbus-x11 \
         x11-utils \
         fonts-wqy-microhei \
@@ -30,7 +30,7 @@ RUN apt-get update && apt install --no-install-recommends xubuntu-desktop -y && 
     && rm -rf /var/lib/apt/lists/*
 
 RUN echo -e 'LANG="zh_CN.UTF-8" \nLANGUAGE="zh_CN:zh:en_US:en"' > /etc/enviroment && sudo locale-gen
-# RUN mkdir /root/.vnc/ && echo "password" | vncpasswd -f > ~/.vnc/passwd && chmod 600 ~/.vnc/passwd
+RUN mkdir /root/.vnc/ && echo "password" | vncpasswd -f > ~/.vnc/passwd && chmod 600 ~/.vnc/passwd
 RUN mkdir /root/.vnc/
 RUN echo "#!/bin/sh \nunset SESSION_MANAGER \nunset DBUS_SESSION_BUS_ADDRESS \nexport GTK_IM_MODULE=fcitx \nexport QT_IM_MODULE=fcitx \nexport XMODIFIERS=@im=fcitx \nexport LANG=zh_CN.UTF-8 \nfcitx -r \nchsh -s $(which zsh) \nstartxfce4" > ~/.vnc/xstartup && chmod u+x ~/.vnc/xstartup && ./etc/init.d/dbus start
 
