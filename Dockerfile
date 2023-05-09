@@ -44,4 +44,4 @@ RUN sh -c "$(curl -fsSL https://gitee.com/mirrors/oh-my-zsh/raw/master/tools/ins
 
 EXPOSE 5901
 
-CMD ["sh","-c","vncserver :1 -localhost no -geometry=1920x1080 && tail -F /root/.vnc/*.log"]
+# CMD ["sh","-c","vncserver :1 -localhost no -geometry=1920x1080 && tail -F /root/.vnc/*.log"]
