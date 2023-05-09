@@ -7,6 +7,8 @@ COPY ktctl kubectl kt.sh /usr/local/bin/
 RUN mkdir -p /root/.kube/ && chmod +x /usr/local/bin/kt.sh
 COPY config.sample /root/.kube/
 
+RUN apt-update && apt install -y iptables sshpass iproute2
+
 # 安装 jdk8
 RUN wget https://repo.huaweicloud.com/java/jdk/8u202-b08/jdk-8u202-linux-x64.tar.gz -O /opt/zulu8.tar.gz  && \
     mkdir -p /opt/java && \
