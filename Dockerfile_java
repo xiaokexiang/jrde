@@ -17,6 +17,7 @@ RUN wget https://repo.huaweicloud.com/java/jdk/8u202-b08/jdk-8u202-linux-x64.tar
 ENV JAVA_HOME=/opt/java
 ENV PATH=${PATH}:${JAVA_HOME}/bin
 
+# 安装idea
 RUN wget https://download.jetbrains.com/idea/ideaIC-2022.3.tar.gz -O /opt/ideaIC-2022.3.tar.gz && \
     mkdir -p /opt/idea && \
     tar -xzf /opt/ideaIC-2022.3.tar.gz -C /opt/idea --strip-components=1 && \
@@ -38,8 +39,6 @@ RUN wget https://dl.pstmn.io/download/latest/linux_64 -O /opt/postman.tar.gz && 
     ln -s /opt/postman/Postman /usr/local/bin/postman && \
     rm postman.tar.gz
 
-
-COPY settings-20200707.xml settings-upms.xml /opt/maven3/conf
 COPY idea.desktop /usr/share/applications/
 COPY idea.desktop /root/桌面/idea.desktop
 COPY postman.desktop /root/桌面/postman.desktop
