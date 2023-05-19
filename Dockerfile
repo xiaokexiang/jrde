@@ -17,6 +17,7 @@ RUN apt-get update && apt install --no-install-recommends xubuntu-desktop -y && 
         htop \ 
         zsh \
         guake \
+        dconf-cli \
         autocutsel \
         xfce4-terminal \
         language-pack-zh-hans \
@@ -44,23 +45,27 @@ RUN sh -c "$(curl -fsSL https://gitee.com/mirrors/oh-my-zsh/raw/master/tools/ins
     sed -i 's/plugins=(git)/plugins=(git zsh-syntax-highlighting zsh-autosuggestions zsh-completions)/g' ~/.zshrc && \
     echo 'bindkey ";" autosuggest-accept' >> ~/.zshrc
 
+SHELL ["/usr/bin/zsh", "-c"] 
+ENV SHELL=/usr/bin/zsh
+
 # powerlevel10k
 RUN git clone --depth=1 https://gitee.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k && \
     echo 'POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true' >>! /root/.zshrc && \
-    sed -i 's&robbyrussell&powerlevel10k/powerlevel10k&g' /root/.zshrc
-SHELL ["/usr/bin/zsh", "-c"]    
-RUN source /root/.zshrc
+    sed -i 's&robbyrussell&powerlevel10k/powerlevel10k&g' /root/.zshrc && \
+    source /root/.zshrc
 
-RUN mkdir -p /usr/share/fonts/MesloLGS && \
-    wget -P /usr/share/fonts/MesloLGS -O MesloLGS-NF-Regular.ttf "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf" && \
-    wget -P /usr/share/fonts/MesloLGS -O MesloLGS-NF-Bold.ttf "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf" && \
-    wget -P /usr/share/fonts/MesloLGS -O MesloLGS-NF-Italic.ttf "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf" && \
-    wget -P /usr/share/fonts/MesloLGS -O MesloLGS-NF-Bold-Italic.ttf "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf" && \
+RUN mkdir -p /root/.fonts/ && \
+    wget -P /root/.fonts/ -O MesloLGS-NF-Regular.ttf "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf" && \
+    wget -P /root/.fonts/ -O MesloLGS-NF-Bold.ttf "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf" && \
+    wget -P /root/.fonts/ -O MesloLGS-NF-Italic.ttf "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf" && \
+    wget -P /root/.fonts/ -O MesloLGS-NF-Bold-Italic.ttf "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf" && \
     fc-cache -f -v
 
 # guake配置
 RUN update-alternatives --install /usr/bin/x-terminal-emulator x-terminal-emulator /usr/bin/guake 50 && \
     update-alternatives --set x-terminal-emulator /usr/bin/guake
+COPY guake.config /root/
+RUN guake --restore-preferences=/root/guake.config > /dev/null 2>&1 &
 
 EXPOSE 5901
 
