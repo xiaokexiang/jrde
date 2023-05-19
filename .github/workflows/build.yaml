@@ -14,8 +14,8 @@ jobs:
       - name: Get label value from Dockerfile
         id: get_label
         run: |
-          label=$(grep -m1 -oP '(?<=LABEL\s+VERSION\=).*' Dockerfile)
-          echo "::set-output VERSION=label::$label"
+          label=$(awk -F '=' '/^LABEL\s+VERSION=/ {print $2}' Dockerfile)
+          echo "::set-output name=label::$label"
 
       - name: Build Docker image
         run: |
