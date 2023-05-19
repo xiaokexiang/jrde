@@ -47,8 +47,10 @@ RUN sh -c "$(curl -fsSL https://gitee.com/mirrors/oh-my-zsh/raw/master/tools/ins
 # powerlevel10k
 RUN git clone --depth=1 https://gitee.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k && \
     echo 'POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true' >>! /root/.zshrc && \
-    sed -i 's&robbyrussell&powerlevel10k/powerlevel10k&g' /root/.zshrc && \
-    source /root/.zshrc
+    sed -i 's&robbyrussell&powerlevel10k/powerlevel10k&g' /root/.zshrc
+SHELL ["/usr/bin/zsh", "-c"]    
+RUN source /root/.zshrc
+
 RUN mkdir -p /usr/share/fonts/MesloLGS && \
     wget -P /usr/share/fonts/MesloLGS -O MesloLGS-NF-Regular.ttf "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf" && \
     wget -P /usr/share/fonts/MesloLGS -O MesloLGS-NF-Bold.ttf "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf" && \
