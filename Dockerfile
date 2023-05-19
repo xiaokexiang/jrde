@@ -1,11 +1,11 @@
 FROM ubuntu:22.04
-MAINTAINER xiaokexiang <xxiaokexiang@gmail.com>
 
+LABEL MAINTAINER xxiaokexiang@gmail.com
 ENV DEBIAN_FRONTEND noninteractive
 ENV TZ=Asia/Shanghai
 LABEL VERSION="base"
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN yes | unminimize
 RUN apt-get update && apt install --no-install-recommends xubuntu-desktop -y && \
     apt install language-pack-zh-hans \
@@ -55,10 +55,10 @@ RUN git clone --depth=1 https://gitee.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM
     source /root/.zshrc
 
 RUN mkdir -p /root/.fonts/ && \
-    wget -P /root/.fonts/ -O MesloLGS-NF-Regular.ttf "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf" && \
-    wget -P /root/.fonts/ -O MesloLGS-NF-Bold.ttf "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf" && \
-    wget -P /root/.fonts/ -O MesloLGS-NF-Italic.ttf "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf" && \
-    wget -P /root/.fonts/ -O MesloLGS-NF-Bold-Italic.ttf "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf" && \
+    wget -O /root/.fonts/MesloLGS-NF-Regular.ttf "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf" && \
+    wget -O /root/.fonts/MesloLGS-NF-Bold.ttf "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf" && \
+    wget -O /root/.fonts/MesloLGS-NF-Italic.ttf "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf" && \
+    wget -O /root/.fonts/MesloLGS-NF-Bold-Italic.ttf "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf" && \
     fc-cache -f -v
 
 # guake配置
